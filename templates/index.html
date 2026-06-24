@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+</head>
+    <body>
+    <div>
+        <nav class="navbar">
+            <ul>
+                <li class="brand">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="">
+            <a href="/">SachAI</a>
+        </li>
+                <li><a   hx-get="/about"
+        hx-target="#content"
+        hx-swap="innerHTML"
+        href="/about">About Us</a></li>
+                <li><a 
+        href="https://github.com/anuushka39/Sach-AI" target="_blank">Repo</a></li>
+                <li><a href="https://linkedin.com/jobs" target="_blank">Careers</a></li>
+                <li class="search-box">
+    <input
+        type="text"
+        placeholder="Search..."><i class="fa-brands fa-sistrix"></i></li>
+                <li><a  hx-get="/login"
+        hx-target="#content"
+        hx-swap="innerHTML"
+        href="/login">Login</a></li>
+            </ul>
+        </nav>
+    </div>
+        <section class="hero">
+
+    <div class="hero-text">
+
+        <div class="eyebrow">
+            AI-Powered Misinformation Detection
+        </div>
+
+        <h1 style="font-family: 'DM Sans', sans-serif; font-weight: 500;">
+            Verify Information <br>
+            Before You <span class="serif">Believe</span> It
+        </h1>
+
+        <p class="hero-description">
+            Analyze text, images, PDFs and news claims using advanced AI
+            models and receive transparent trust reports with explainable
+            reasoning.
+        </p>
+
+        <div class="hero-actions">
+            <!-- <form action="/analyze" method="POST"> -->
+                <input
+                    type="text"
+                    id="claim-input"
+                    name="claim"
+                    placeholder="Upload a claim, headline or statement..."
+                    class="hero-input"
+                >
+                <button type="button" id="analyze-btn" class="analyze-btn" onclick="startAnalysis()">
+        Analyze 
+    </button>
+
+            
+
+            <!-- <button style="font-family:'Outfit'; font-weight: 500;" class="analyze-btn">
+                Analyze 
+            </button> -->
+            <div class="analyze-section">
+
+    <!-- <button type="submit" id="analyze-btn" style="font-family:'Outfit'; font-weight: 500;" class="analyze-btn">
+        Analyze 
+    </button> -->
+
+    <div id="loading-box" class="hidden">
+        <div class="spinner"></div>
+        <p id="loading-text">Extracting Content...</p>
+    </div>
+
+    <button id="download-btn" class="hidden" onclick="window.location.href='/download-report'">
+        Download Trust Report
+    </button>
+
+</div>
+
+        </div>
+  <div class="orb" style=" left:-80px;
+    top:260px; background:#ec745b;"></div>
+        <div class="badges">
+            <span>📝 Text</span>
+            <span>🖼 Images</span>
+            <span>📄 PDFs</span>
+            <span>📰 Audio</span>
+        </div>
+
+    </div>
+    <div class="orb"></div>
+</section>
+
+<section class="showcase">
+
+    <div class="section-head">
+
+        <div>
+            <span class="kicker">Platform Features</span>
+            <h2 style="font-family: 'DM Sans', sans-serif; font-weight: 500;">See SachAI in action.</h2>
+        </div>
+
+        <p class="section-note">
+            Analyze misinformation across text, images and documents with transparent AI explanations.
+        </p>
+        <!-- <div class="orb" style="top:750px; background:#ec745b;"></div> -->
+        <div class="orb" style="top:3100px; left:-40px; "></div>
+          <div class="orb" style="top:3450px; background:#ec745b;;"></div>
+    </div>
+
+    <div class="work-grid">
+
+        <div class="project">
+
+            <div class="project-art">
+                <div class="placeholder">
+                    TEXT ANALYSIS REPORT
+                </div>
+            </div>
+
+            <div class="project-meta">
+                <div>
+                    <h3>Text Verification</h3>
+                    <p>
+                        Detect misleading claims and fake news.
+                    </p>
+                </div>
+
+                <span class="arrow">↗</span>
+
+            </div>
+
+        </div>
+
+
+        <div class="project">
+
+            <div class="project-art image-card">
+                <div class="placeholder">
+                    IMAGE FORENSICS
+                </div>
+            </div>
+
+            <div class="project-meta">
+
+                <div>
+                    <h3>Image Analysis</h3>
+
+                    <p>
+                        Detect manipulated and AI-generated images.
+                    </p>
+                </div>
+
+                <span class="arrow">↗</span>
+
+            </div>
+
+        </div>
+
+
+        <div class="project">
+
+            <div class="project-art pdf-card">
+                <div class="placeholder">
+                    PDF CLAIM EXTRACTION
+                </div>
+            </div>
+
+            <div class="project-meta">
+
+                <div>
+                    <h3>Document Intelligence</h3>
+
+                    <p>
+                        Verify information extracted from reports and PDFs.
+                    </p>
+                </div>
+
+                <span class="arrow">↗</span>
+
+            </div>
+
+        </div>
+        <div class="project">
+
+            <div class="project-art image-card">
+                <div class="placeholder">
+                    Other
+                </div>
+            </div>
+
+            <div class="project-meta">
+
+                <div>
+                    <h3>Other Analysis</h3>
+
+                    <p>
+                       ✓ Explainable AI
+✓ Source Credibility Analysis
+✓ Deepfake Detection
+✓ Multi-modal Verification
+✓ Confidence Score
+                    </p>
+                </div>
+
+                <span class="arrow">↗</span>
+
+            </div>
+
+        </div>
+
+        <div class="project">
+
+            <div class="project-art image-card">
+                <div class="placeholder">
+                    other
+                </div>
+            </div>
+
+            <div class="project-meta">
+
+                <div>
+                    <h3>other</h3>
+
+                    <p>
+                        Evaluate various types of digital content for credibility.
+                    </p>
+                </div>
+
+                <span class="arrow">↗</span>
+
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+<section class="about-sachai">
+
+    <div class="about-left">
+        <span class="section-tag">
+            BUILT FOR TRUST
+        </span>
+
+        <h2 style="font-family: 'DM Sans', sans-serif; font-weight: 500;">
+            Powered By <span style="color: #ec745b; font-family: Georgia, serif; font-weight: 500; font-style: italic;font-size: larger;">Intelligent AI</span>
+        </h2>
+    </div>
+
+    <div class="about-right">
+
+        <p>
+            SachAI combines Natural Language Processing, Computer Vision,
+            OCR and Explainable AI techniques to evaluate the credibility
+            of digital content and generate transparent trust reports.
+        </p>
+
+        <div class="tech-stack">
+
+            <span>Flask</span>
+            <span>Gemini</span>
+            <span>Transformers</span>
+            <span>XGBoost</span>
+            <span>OCR</span>
+            <span>MySQL</span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+
+<section class="cta">
+
+    <span class="section-tag">
+        START NOW
+    </span>
+
+    <h2 style="font-family: 'DM Sans', sans-serif; font-weight: 500;">
+        Ready to Verify a <span style="color: var(--lime); font-family: Georgia, serif; font-style: italic; font-weight: 800;">Claim</span><span style= "font-family:'DM Sans', sans-serif; font-weight: 500;"> ?</span>
+    </h2>
+
+    <p>
+        Get started with AI-powered misinformation detection.
+    </p>
+
+    <!-- <button 
+    style="font-family:'Outfit'; font-weight: 500; background:black;
+    color:white;
+    border:none;
+    border-radius:999px;
+    padding:18px 28px;
+    cursor:pointer;" 
+    >
+        Start Analysis
+    </button> -->
+    <button id="analyze-btn" class="analyze-btn"><a href="#" style="color:white;">Start Analysis</a></button>
+
+</section>
+<footer class="footer">
+
+    <div>
+        © 2026 SachAI
+    </div>
+
+    <div class="footer-links">
+
+        <a href="#">Privacy</a>
+
+        <a href="https://github.com/anuushka39/Sach-AI">Github</a>
+
+        <a href="#">Research</a>
+
+    </div>
+
+</footer>
+<script>
+
+async function startAnalysis(){
+
+    const claim =
+        document.getElementById("claim-input").value;
+
+    document.getElementById("analyze-btn")
+            .style.display = "none";
+
+    const loadingBox =
+        document.getElementById("loading-box");
+
+    loadingBox.classList.remove("hidden");
+    loadingBox.style.display = "flex";
+
+    const messages = [
+        "Extracting Content...",
+        "Running AI Models...",
+        "Checking Source Credibility...",
+        "Generating Trust Report..."
+    ];
+
+    const loadingText =
+        document.getElementById("loading-text");
+
+    let index = 0;
+
+    const interval = setInterval(() => {
+
+        index++;
+
+        if(index < messages.length){
+            loadingText.innerText = messages[index];
+        }
+
+    }, 2000);
+
+    // Backend ko data bhejo
+    const response = await fetch("/analyze", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            claim: claim
+        })
+
+    });
+
+    const result = await response.json();
+
+    // Animation poori chalne do
+    setTimeout(() => {
+
+        clearInterval(interval);
+
+        loadingBox.style.display = "none";
+
+        if(result.status === "success"){
+
+            document.getElementById("download-btn")
+                    .classList.remove("hidden");
+        }
+
+    }, 8000);
+
+}
+
+</script>
+    </body>
+    </html>

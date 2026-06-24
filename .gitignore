@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+trust_report.pdf
+users.db
+.vscode/
