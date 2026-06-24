@@ -4,4 +4,4 @@ __pycache__/
 .env
 trust_report.pdf
 users.db
-.vscode/
+.vscode
