@@ -11,3 +11,14 @@ def calculate_score(
     )
 
     return round(final_score, 2)
+
+authority_score =
+(
+    domain_score * 0.6
+) +
+(
+    relevance_score * 0.2
+) +
+(
+    consensus_score * 0.2
+)
