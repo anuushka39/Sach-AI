@@ -52,7 +52,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(levelname)s: %(message)s"
 )
-MAX_SEARCH_RESULTS = 5
+MAX_SEARCH_RESULTS = 20
 MIN_CONTENT_LENGTH = 100
 
 
@@ -288,6 +288,28 @@ def retrieve_evidence(claim_embedding, chunks,  top_k=TOP_K_PARAGRAPHS):
        chunk["rank"] = rank
     return evidence[:top_k]
 
+def select_best_sentence(claim_embedding, chunk_text):
+    """
+    Select the single most relevant sentence from one evidence chunk.
+    Uses MiniLM sentence embeddings.
+    """
+    if not chunk_text:
+        return chunk_text
+    # Split into sentences
+    sentences = [
+        s.strip()
+        for s in re.split(r'(?<=[.!?])\s+', chunk_text)
+        if len(s.strip()) > 20
+    ]
+    # If chunk already contains only one sentence
+    if len(sentences) <= 1:
+        return chunk_text
+    # Batch encode all sentences
+    sentence_embeddings = embedding_model.encode( sentences, convert_to_tensor=True, show_progress_bar=False)
+    similarities = util.cos_sim( claim_embedding, sentence_embeddings)[0]
+    best_index = similarities.argmax().item()
+    return sentences[best_index]
+
 # Embeddings
 def calculate_relevance(evidence_chunks):
     ... # MiniLM embeddings
@@ -322,7 +344,9 @@ stance_model = pipeline(
 )
 print("DeBERTa Loaded.")
 # Stance Detection
-def get_stance( claim, source_title, evidence_chunks):
+
+
+def get_stance(claim_embedding, claim, source_title, evidence_chunks):
     # DeBERTa NLI , maye its stance--instead of sratr/end 2000 chars, give it most relevant paragraph+title
     '''
     befor this we also added rank thing in retrieve evidence--DeBERTa can prioritize the highest-ranked evidence first.
@@ -360,19 +384,46 @@ def get_stance( claim, source_title, evidence_chunks):
         "REFUTES": 0.0,
     }
     for evidence in evidence_chunks:
+        print("\n" + "="*80)
+        print(f"Chunk {evidence['chunk_id']}")
+        print(f"Similarity : {evidence['similarity']:.4f}")
         if evidence["similarity"] < MIN_SIMILARITY_FOR_STANCE:
+           print("Skipped because of similarity threshold.")
            continue
-        premise =( f"Title: {source_title}\n\n"
-        f"Evidence: {evidence['text']}" )
+        best_sentence = select_best_sentence(
+            claim_embedding,
+            evidence["text"]
+        )
+
+        premise = (
+            f"Title: {source_title}\n\n"
+            f"Evidence: {best_sentence}"
+        )
         try:
+            print("\nPremise Preview:")
+            print("\nBest Sentence:")
+            print(best_sentence)
+            print()
+
+            print("Claim:")
+            print(claim)
+            print()
             result = stance_model(
                 {
                     "text": premise,
                     "text_pair": claim
-                }
+                },
+                truncation=True
             )
+            if isinstance(result, list):
+                result = result[0]
+            print("Raw Model Output:")
+            print(result)
+            print()
             label = result["label"].upper()
             confidence = float(result["score"])
+            print(f"Label      : {label}")
+            print(f"Confidence : {confidence:.4f}")
             # Map HF labels to project labels
             if label == "ENTAILMENT":
                 stance = "SUPPORTS"
@@ -461,7 +512,7 @@ def analyze_source(claim_embedding, claim, source):
     )
     # Article Stance
     stance = get_stance(
-        claim,
+        claim_embedding, claim,
         source["title"],
         evidence
     )
@@ -590,6 +641,21 @@ def test_consensus_pipeline(claim):
     print("=" * 80)
 
     result = consensus(analyzed_sources)
+     
+    for s in analyzed_sources:
+        print("="*60)
+        print(s["title"])
+        print("Authority :", s["authority_score"])
+        print("Relevance :", s["relevance_score"])
+        print("Stance :", s["stance_label"])
+        print("Confidence :", s["stance_confidence"])
+        print("Weight :", s["source_weight"])
+        print("Weight :", round(
+            s["authority_score"]/100
+            * s["relevance_score"]/100
+            * s["stance_confidence"]/100,
+            4
+    ))
 
     print()
     print("CONSENSUS RESULT")
